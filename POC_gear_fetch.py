@@ -9,11 +9,11 @@ def gear_fetcher(user_id):
     try: 
         mydb = mysql.connector.connect(
         host = 'localhost',
-        port = 3363,
-        user = 'root',
-        password = 'sammidog',
+        port = ####,
+        user = '####',
+        password = '####',
         auth_plugin='mysql_native_password',
-        database = "gear_fit_calc2",
+        database = "gear_fit_calc",
         )
         
         print("MySQL connection open")
