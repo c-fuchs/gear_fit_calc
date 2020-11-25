@@ -1,0 +1,71 @@
+CREATE DATABASE gear_fit_calc;
+USE gear_fit_calc;
+
+CREATE TABLE IF NOT EXISTS users(
+    user_id INT NOT NULL AUTO_INCREMENT,
+    user_bust FLOAT,
+    user_waist FLOAT,
+    user_derived_bust FLOAT,
+    user_derived_waist FLOAT,
+    PRIMARY KEY (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS gear(
+    gear_id INT NOT NULL AUTO_INCREMENT,
+    gear_brand VARCHAR(50),
+    gear_name VARCHAR(100),
+    gear_size VARCHAR(10),
+    gear_derived_bust FLOAT,
+    gear_derived_waist FLOAT,
+    PRIMARY KEY (gear_id)
+);
+
+CREATE TABLE IF NOT EXISTS fit_reports(
+    fr_id INT NOT NULL AUTO_INCREMENT,
+    fr_user_id INT,
+    fr_gear_id INT,
+    fr_backpro BOOLEAN DEFAULT 0,
+    fr_bust_adjust FLOAT,
+    fr_waist_adjust FLOAT,
+    gear_bust_est FLOAT,
+    gear_waist_est FLOAT,
+    user_bust_est FLOAT,
+    user_waist_est FLOAT,
+    PRIMARY KEY (fr_id),
+    FOREIGN KEY (fr_user_id) REFERENCES users(user_id),
+    FOREIGN KEY (fr_gear_id) REFERENCES gear(gear_id)
+);
+
+INSERT INTO users (user_bust,user_waist) 
+VALUES (29.0,24),(30.0,23),(32.5,27),(33.0,24),(36.5,30),(35.5,28),(36.0,26),(32.0,25);
+
+INSERT INTO gear (gear_brand,gear_name,gear_size,gear_derived_bust,gear_derived_waist)
+VALUES  ('Dainese','Jesse','38',29.1,22.8),
+        ('Dainese','Jesse','40',30.7,24.4),
+        ('Dainese','Jesse','42',32.3,26),
+        ('Dainese','Jesse','44',33.85,27.55),
+        ('Dainese','Jesse','46',35.4,29.1),
+        ('Dainese','Jesse','48',37,30.7),
+        ('Joe Rocket','Cleo','XS',31,24.5),
+        ('Joe Rocket','Cleo','SM',33.5,26.5),
+        ('Joe Rocket','Cleo','MD',35.5,28.5),
+        ('Joe Rocket','Cleo','LG',38,30.5),
+        ('Joe Rocket','Cleo','XL',41,31);
+
+INSERT INTO fit_reports (fr_user_id,fr_gear_id,fr_backpro,fr_bust_adjust,fr_waist_adjust)
+VALUES  (1,2,1,0,1),
+        (1,7,1,2,0),
+        (2,2,0,0,-1),
+        (2,7,1,0,2),
+        (3,3,1,-1,-2),
+        (3,8,1,1,0),
+        (4,4,1,0,1),
+        (4,8,1,0,-1),
+        (5,5,0,-1,2),
+        (5,9,1,0,-2),
+        (6,5,0,1,0),
+        (6,9,1,1,1),
+        (7,6,1,2,-1),
+        (8,3,1,-1,2),
+        (8,4,1,2,-1),
+        (8,7,1,0,0);
