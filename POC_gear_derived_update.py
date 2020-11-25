@@ -1,29 +1,6 @@
 #POC update for gear_derived_bust
 #updates derived measurements for a single gear_id with multiple fit report values
 
-def testing1 ():
-    #initialize empty list to store bust_est values from fit reports
-    #bust = [34,35,35,36,34]
-    #bust_est = sum(bust)/len(bust)
-    #print(bust_est)
-
-    #add all recorded estimates to lists. 
-    #This would normally be fed from a SQL query where col 14 is bust_est 
-    #for row in record:
-    #####    bust.append(row[14])
-    #bust.append(33)
-    #bust_est = sum(bust)/len(bust)
-    #print(bust_est)
-
-    #average all fit report fit estimates
-
-    #save estimates as new gear_derived values
-    #will need to UPDATE the value via SQL
-    #gear_derived_bust = bust_est
-
-    #print(gear_derived_bust)
-    pass
-
 def gear_derived_update(gear_id):
     
     #sql connector goes here
@@ -33,11 +10,11 @@ def gear_derived_update(gear_id):
     try: 
         mydb = mysql.connector.connect(
         host = 'localhost',
-        port = 3363,
-        user = 'root',
-        password = 'sammidog',
+        port = ####,
+        user = '####',
+        password = '####',
         auth_plugin='mysql_native_password',
-        database = "gear_fit_calc2",
+        database = "gear_fit_calc",
         )
         
         print("MySQL connection open")
