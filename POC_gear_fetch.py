@@ -38,7 +38,7 @@ def gear_fetcher(user_id):
         user_derived_waist = res1a[0]
         print(user_derived_waist)
 
-        #select all records from gear and compare bust measurements to user
+       #select all records from gear and compare measurements to user
         sql2 = ("SELECT * FROM gear")
         cursor.execute(sql2)
         records = cursor.fetchall()
@@ -50,11 +50,11 @@ def gear_fetcher(user_id):
             gear_size.append(row[3])
             gear_derived_bust.append(row[4])
             gear_derived_waist.append(row[5])
-            variance_b = (row[4] - user_derived_bust)**2 #squared to make it positive
+            variance_b = (row[4] - user_derived_bust)
             bust_variance.append(variance_b) 
-            variance_w = (row[5] - user_derived_waist)**2 #squared to make it positive
+            variance_w = (row[5] - user_derived_waist)        
             waist_variance.append(variance_w)
-            variance_tot = variance_b + variance_w
+            variance_tot = (variance_b**2 + variance_w**2)**0.5 #squared to make them positive, sqrt to unsquare them
             total_variance.append(variance_tot)
 
         #find the index of the gear with the least variance from the user
@@ -63,7 +63,7 @@ def gear_fetcher(user_id):
         #print results for user, limit to top 10
         print("Here are your 10 best jacket fit results: \n")
         for i in range (0,10):
-            print(str(gear_brand[bf_index]) + ' ' + str(gear_name[bf_index]) + ' in size ' + str(gear_size[bf_index]) + ' has a variance of ' + str(total_variance[bf_index]**0.5) + ' inches. ')
+            print(str(gear_brand[bf_index]) + ' ' + str(gear_name[bf_index]) + ' in size ' + str(gear_size[bf_index]) + ' has a total variance of ' + str(total_variance[bf_index]**0.5) + ' inches. The bust variance is ' + str(bust_variance[bf_index]) + ' and the waist variance is ' + str(waist_variance[bf_index]))
             gear_brand.remove(gear_brand[bf_index])
             gear_name.remove(gear_name[bf_index])
             gear_size.remove(gear_size[bf_index])
@@ -82,4 +82,4 @@ def gear_fetcher(user_id):
             mydb.close()
             print("MySQL connection is closed")   
 
-gear_fetcher(2)
+gear_fetcher(####)
