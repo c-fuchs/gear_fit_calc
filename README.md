@@ -12,6 +12,5 @@ To do:
 - Deploy on cf.com or own site
 - Add more items to gear table
 - Add user height/weight and calculated BMI
-- Update results fetcher to specify how an item will fit: tight in the waist, loose in the bust, etc.
 - Extend to pants, suits, boots
 - Add sleeve length to jackets
