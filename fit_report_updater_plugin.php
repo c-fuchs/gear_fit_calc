@@ -1,7 +1,7 @@
 <?php
 
 /*
-   Plugin Name: PHP Fit Reports Update
+   Plugin Name: Fit Reports Update
    description: A plugin to take Caldera form submissions and save them to moto_gear_fit_calc.
                 Works in conjuction with Caldera Forms, called by hook upon new form submission
    Version: 1.0.3
