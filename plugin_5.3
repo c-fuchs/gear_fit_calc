@@ -1,0 +1,209 @@
+<?php
+
+/*
+   Plugin Name: PHP Fit Reports Update
+   description: A plugin to take Caldera form submissions and save them to moto_gear_fit_calc.
+                Works in conjuction with Caldera Forms, called from functions.php of Caldera plugin
+   Version: 1.0.0
+   Author: Carolanne Fuchs
+   Author URI: https://carolannefuchs.com
+*/
+
+defined( 'ABSPATH' ) or exit; //no idea what this does but I'm told I need it
+
+// Upon a new caldera forms submission, plugin should read from caldera's db, then write to the moto gear fit db
+// First update fit_reports, then gear, then users, then fetch results
+
+    function fit_report_updater() {
+        global $wpdb;
+        // Create connection to site db
+        $conn = new wpdb("xxxx", "xxxx", "xxxx", "xxxx");
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        } echo "Connected successfully. ";
+        
+        //$database2 = "carolann_moto_gear_fit_calculator"; //new db name to INSERT INTO
+        // Find most recent form entry ID
+        //$sql = "SELECT entry_id FROM wp_cf_form_entry_values ORDER BY entry_id DESC LIMIT 1 ";
+        $sql = "SELECT * FROM wp_cf_form_entry_values ORDER BY id DESC LIMIT 1 ";
+        $row1 = $conn->get_row($sql, ARRAY_A);
+        $entry_id = $row1['entry_id'];
+        echo $entry_id . ' is the entry_id. ';
+
+        // Get fit report for a given entry_id
+        //actual getter below. Gets an associative array and loops through all elements, assigning them to appropriate variables
+        //$sql1 = $conn->prepare("SELECT * FROM $conn->wp_cf_form_entry_values WHERE entry_id = %s ORDER BY id", $entry_id);
+        //$rows = $conn->get_results($sql1, ARRAY_A);
+        //foreach($rows as $row) { //loops through results array and assigns each value to the appropriate variable
+            if ($row['slug'] == 'user_bust') {
+                $user_bust = $row['value'];
+            } elseif ($row['slug'] == 'user_waist') {
+                $user_waist = $row['value'];
+            } elseif ($row['slug'] == 'gear_brand' ) {
+                $gear_brand = $row['value'];
+            } elseif ($row['slug'] == 'gear_name' ) {
+                $gear_name = $row['value'];
+            } elseif ($row['slug'] == 'gear_brand' ) {
+                $gear_brand = $row['value'];
+            } elseif ($row['slug'] == 'gear_size' ) {
+                $gear_size = $row['value'];
+            } elseif ($row['slug'] == 'back_protector' ) {
+                $fr_backpro = $row['value'];
+            } elseif ($row['slug'] == 'bust_fit' ) {
+                $fr_bust_adjust = $row['value'];
+            } elseif ($row['slug'] == 'waist_fit' ) {
+                $fr_waist_adjust = $row['value'];
+            }
+        //}
+        
+        $rows = $conn->get_results($conn->prepare("SELECT * FROM wp_cf_form_entry_values WHERE entry_id = %d ORDER BY id", $entry_id), ARRAY_A); //issue with type conversions for $entry_id
+        foreach($rows as $row) { //loops through results array and assigns each value to the appropriate variable
+            if ($row['slug'] == 'user_bust') {
+                $user_bust = $row['value'];
+            } elseif ($row['slug'] == 'user_waist') {
+                $user_waist = $row['value'];
+            } elseif ($row['slug'] == 'gear_brand' ) {
+                $gear_brand = $row['value'];
+            } elseif ($row['slug'] == 'gear_name' ) {
+                $gear_name = $row['value'];
+            } elseif ($row['slug'] == 'gear_brand' ) {
+                $gear_brand = $row['value'];
+            } elseif ($row['slug'] == 'gear_size' ) {
+                $gear_size = $row['value'];
+            } elseif ($row['slug'] == 'back_protector' ) {
+                $fr_backpro = $row['value'];
+            } elseif ($row['slug'] == 'bust_fit' ) {
+                $fr_bust_adjust = $row['value'];
+            } elseif ($row['slug'] == 'waist_fit' ) {
+                $fr_waist_adjust = $row['value'];
+            }
+        }
+        
+        echo 'Entry_id is ' . $entry_id . '. Bust is ' . $user_bust . ', waist is ' . $user_waist . ', gear_brand is ' . $gear_brand . ', back_protector is ' . $fr_backpro . ', bust_adjust is ' . $fr_bust_adjust;
+
+    /*
+        //write new entries to tables in database2
+        // Create connection to moto fit db, database2
+        $conn = new mysqli($servername, $username, $password, $database2);
+        // Check connection
+        if ($result = $conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        } 
+        echo "Connected successfully";
+
+        // Update users with new user_bust, and user_waist
+        $sql = "INSERT INTO fc_users (user_bust) VALUES ('.$user_bust.')";
+        if ($result = $conn->query($sql)){
+            echo "User bust updated";
+        } else {
+            echo "Error: " . $sql . "" . mysqli_error($conn);
+        } 
+        $sql = "INSERT INTO fc_users (user_waist) VALUES ('.$user_waist.')";
+        if ($result = $conn->query($sql)){
+            echo "User waist updated";
+        } else {
+            echo "Error: " . $sql . "" . mysqli_error($conn);
+        }    
+
+        // Get newest user_id
+        $sql = "SELECT user_id FROM fc_users ORDER BY user_id DESC LIMIT 1";
+        if ($result = $conn->query($sql)) {
+			while ($row = $result->fetch_assoc()) {
+				$user_id = $row[0];
+			}
+		}
+
+        // Get gear_id for first fit report
+        $sql = "SELECT gear_id FROM fc_gear WHERE gear_brand = '.$gear_brand.' AND gear_name = '.$gear_name.' AND gear_size = '.$gear_size.'";
+        if ($result = $conn->query($sql)) {
+			while ($row = $result->fetch_assoc()) {
+				$gear_id = $row[0];
+			}
+		}
+
+        // Insert values into fit_reports for first fit report
+        $sql = "INSERT INTO fc_fit_reports (fr_user_id, fr_gear_id, fr_backpro, fr_bust_adjust, fr_waist_adjust) VALUES ($user_id, $gear_id, $fr_backpro, $fr_bust_adjust, $fr_waist_adjust";
+        if ($result = $conn->query($sql)){
+            echo "User user_id, gear_id, backpro, bust adj, and waist adj updated";
+        } else {
+            echo "Error: " . $sql . "" . mysqli_error($conn);
+        }
+        // Get newest fc_fit_reports fr_id
+        $sql = "SELECT fr_id FROM fc_fit_reports ORDER BY fr_id DESC LIMIT 1";
+        if ($result = $conn->query($sql)) {
+			while ($row = $result->fetch_assoc()) {
+				$fr_id = $row[0];
+			}
+		}
+
+        // Get gear_derived_bust value from gear and save as gear_bust
+        $sql = "SELECT gear_derived_bust FROM fc_gear WHERE gear_id = '.$gear_id.'";
+        if ($result = $conn->query($sql)) {
+			while ($row = $result->fetch_assoc()) {
+				$gear_bust = $row[0];
+			}
+		}
+        // Get gear_derived_waist value from gear and save as gear_waist
+        $sql = "SELECT gear_derived_waist FROM fc_gear WHERE gear_id = '.$gear_id.'";
+        if ($result = $conn->query($sql)) {
+			while ($row = $result->fetch_assoc()) {
+				$gear_waist = $row[0];
+			}
+		}
+
+        // calculate gear_bust_est for this fit report
+        $gear_bust_est = ($gear_bust + $user_bust + $fr_bust_adjust + $fr_backpro)/2;
+
+        // calculate gear_waist_est for this fit report
+        $gear_waist_est = ($gear_waist + $user_waist + $fr_waist_adjust + ($fr_backpro/2))/2;
+
+        // calculate user_bust_est for this fit report
+        $user_bust_est = ($gear_bust_est + $user_bust + $fr_bust_adjust)/2;
+
+        // calculate user_waist_est for this fit report
+        $user_waist_est = ($gear_waist_est + $user_waist + $fr_waist_adjust)/2;
+            
+        // update gear_bust_est in fit_reports table 
+        $sql = "UPDATE fc_fit_reports SET (gear_bust_est) = ('.$gear_bust_est.') WHERE fr_id = '.$fr_id.'";
+        if ($result = $conn->query($sql)){
+            echo "Fit reports gear bust updated";
+        } else {
+            echo "Error: " . $sql . "" . mysqli_error($conn);
+        }
+        // update gear_waist_est in fit_reports table 
+        $sql = "UPDATE fc_fit_reports SET (gear_waist_est) = ('.$gear_waist_est.') WHERE fr_id = '.$fr_id.'";
+        if ($result = $conn->query($sql)){
+            echo "Fit reports gear waist updated";
+        } else {
+            echo "Error: " . $sql . "" . mysqli_error($conn);
+        }
+
+        // update user_bust_est in fit_reports table
+        $sql = "UPDATE fc_fit_reports SET user_bust_est = '.$user_bust_est.' WHERE fr_id = '.$fr_id.'";
+        if ($result = $conn->query($sql)){
+            echo "Fit reports user bust updated";
+        } else {
+            echo "Error: " . $sql . "" . mysqli_error($conn);
+        }
+
+        // update user_waist_est in fit_reports table
+        $sql = "UPDATE fc_fit_reports SET user_waist_est = '.$user_waist_est.' WHERE fr_id = '.$fr_id.'";    
+        if ($result = $conn->query($sql)){
+            echo "Fit reports user waist updated";
+        } else {
+            echo "Error: " . $sql . "" . mysqli_error($conn);
+        }
+
+*/    
+    $conn->close();
+    }
+
+fit_report_updater();	
+	
+    /* function gear_updater($gear_id) {
+        // retrieve all bust records for a given gear_id from fit_reports, and save as array
+
+*/
+
+?>  
